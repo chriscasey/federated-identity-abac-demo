@@ -13,3 +13,9 @@ frontend/dist/
 .DS_Store
 .env
 *.local
+
+# Local Netlify folder
+.netlify
+
+# Build-time copy of api/ package copied into functions dir for Lambda bundling
+netlify/functions/api/
