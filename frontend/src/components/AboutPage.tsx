@@ -279,7 +279,7 @@ export function AboutPage() {
           </div>
           <div className="stack-item">
             <span className="stack-label">Deploy</span>
-            <span>Netlify (static frontend + Python serverless function via Mangum)</span>
+            <span>Netlify (static frontend) · Render (FastAPI backend) · Netlify proxies <code>/api/*</code> to Render server-side</span>
           </div>
         </div>
       </section>
