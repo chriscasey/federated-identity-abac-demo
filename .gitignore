@@ -17,5 +17,5 @@ frontend/dist/
 # Local Netlify folder
 .netlify
 
-# Build-time copy of api/ package copied into functions dir for Lambda bundling
-netlify/functions/api/
+# Build-time copy of api/ package copied into directory function for Lambda bundling
+netlify/functions/justis/api/
