@@ -7,9 +7,16 @@
   PYTHON_VERSION = "3.11"
   NODE_VERSION = "20"
 
+# Bundle the FastAPI app package alongside the Lambda function.
+# The function file is justis.py (not api.py) to avoid a module-name collision:
+# Lambda imports the function file as a module using the filename, so naming it
+# api.py would shadow the api/ package we're trying to import.
+[functions]
+  included_files = ["api/**"]
+
 [[redirects]]
   from = "/api/*"
-  to = "/.netlify/functions/api/api/:splat"
+  to = "/.netlify/functions/justis/api/:splat"
   status = 200
 
 [[redirects]]
