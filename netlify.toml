@@ -1,19 +1,15 @@
 [build]
-  # cp copies the FastAPI package into the directory-style function folder so
-  # Netlify's bundler includes it in the Lambda zip (it bundles everything inside
-  # netlify/functions/justis/ automatically).
-  command = "cp -r api netlify/functions/justis/api && cd frontend && npm ci && npm run build"
+  command = "cd frontend && npm ci && npm run build"
   publish = "frontend/dist"
-  functions = "netlify/functions"
 
 [build.environment]
-  PYTHON_VERSION = "3.11"
   NODE_VERSION = "20"
 
 [[redirects]]
   from = "/api/*"
-  to = "/.netlify/functions/justis/api/:splat"
+  to = "https://federated-identity-abac-demo.onrender.com/api/:splat"
   status = 200
+  force = true
 
 [[redirects]]
   from = "/*"
