@@ -19,8 +19,9 @@ import { IngestionPanel } from './components/IngestionPanel'
 import { CQRSPanel } from './components/CQRSPanel'
 import { EntityResolutionPanel } from './components/EntityResolutionPanel'
 import { DataArchitectureAbout } from './components/DataArchitectureAbout'
+import { LandingPage } from './components/LandingPage'
 
-type Section = 'abac' | 'persons' | 'data-arch'
+type Section = 'overview' | 'abac' | 'persons' | 'data-arch'
 type AbacSubTab = 'demo' | 'about'
 type PersonsSubTab = 'records' | 'source-systems' | 'about'
 type DataArchSubTab = 'ingestion' | 'storage' | 'entity-resolution' | 'about'
@@ -34,7 +35,7 @@ export function App() {
   const [accessResult, setAccessResult] = useState<AccessDecisionResponse | null>(null)
   const [auditLog, setAuditLog] = useState<AuditLogEntry[]>([])
   const [showRawPayload, setShowRawPayload] = useState(false)
-  const [activeSection, setActiveSection] = useState<Section>('abac')
+  const [activeSection, setActiveSection] = useState<Section>('overview')
   const [abacSubTab, setAbacSubTab] = useState<AbacSubTab>('demo')
   const [personsSubTab, setPersonsSubTab] = useState<PersonsSubTab>('records')
   const [dataArchSubTab, setDataArchSubTab] = useState<DataArchSubTab>('ingestion')
@@ -106,6 +107,12 @@ export function App() {
           <h1>Federated Identity &amp; ABAC Demo</h1>
           <nav className="tab-nav">
             <button
+              className={`tab-btn ${activeSection === 'overview' ? 'tab-active' : ''}`}
+              onClick={() => setActiveSection('overview')}
+            >
+              Overview
+            </button>
+            <button
               className={`tab-btn ${activeSection === 'abac' ? 'tab-active' : ''}`}
               onClick={() => setActiveSection('abac')}
             >
@@ -127,7 +134,7 @@ export function App() {
         </div>
       </header>
 
-      <div className="sub-tab-bar">
+      {activeSection !== 'overview' && <div className="sub-tab-bar">
         {activeSection === 'data-arch' ? (
           <>
             <button
@@ -192,9 +199,11 @@ export function App() {
             </button>
           </>
         )}
-      </div>
+      </div>}
 
-      {activeSection === 'abac' ? (
+      {activeSection === 'overview' ? (
+        <LandingPage onNavigate={(s) => setActiveSection(s)} />
+      ) : activeSection === 'abac' ? (
         abacSubTab === 'demo' ? (
           <>
             <main className="app-main">

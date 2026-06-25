@@ -1624,6 +1624,160 @@ h2 {
   padding: 16px 0;
 }
 
+/* ── Landing page ───────────────────────────────────────────────── */
+.landing-page {
+  padding: 32px 0 60px;
+  display: flex;
+  flex-direction: column;
+  gap: 36px;
+}
+
+.landing-intent {
+  max-width: 780px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.landing-intent p {
+  font-size: 0.9rem;
+  color: var(--text-muted);
+  line-height: 1.75;
+}
+
+.landing-sections {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+}
+
+.landing-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 24px;
+  cursor: pointer;
+  transition: border-color 0.15s, box-shadow 0.15s;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.landing-card:hover { border-color: var(--accent); box-shadow: 0 2px 10px rgba(28,79,160,0.08); }
+
+.landing-card-header { display: flex; align-items: center; gap: 10px; }
+
+.landing-card-num {
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: var(--accent);
+  background: rgba(28,79,160,0.08);
+  border-radius: 3px;
+  padding: 2px 7px;
+}
+
+.landing-card h3 { font-size: 0.95rem; font-weight: 600; color: var(--text); }
+
+.landing-card-desc {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  line-height: 1.6;
+}
+
+.landing-card-features {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  flex: 1;
+  margin-bottom: 6px;
+}
+
+.landing-card-features li {
+  font-size: 0.82rem;
+  color: var(--text);
+  padding-left: 14px;
+  position: relative;
+}
+
+.landing-card-features li::before { content: '▸'; position: absolute; left: 0; color: var(--accent); }
+
+.landing-card-btn {
+  align-self: flex-start;
+  background: var(--accent);
+  color: #fff;
+  border: none;
+  border-radius: var(--radius);
+  padding: 7px 16px;
+  font-size: 0.82rem;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.landing-card-btn:hover { background: var(--accent-hover); }
+
+.landing-books {
+  display: flex;
+  align-items: baseline;
+  gap: 16px;
+  padding: 13px 16px;
+  background: var(--surface-alt);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  flex-wrap: wrap;
+}
+
+.landing-books-label {
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  color: var(--text-muted);
+  white-space: nowrap;
+}
+
+.landing-books-list {
+  display: flex;
+  gap: 28px;
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  flex-wrap: wrap;
+}
+
+/* ── Pattern references ─────────────────────────────────────────── */
+.pattern-refs {
+  margin-top: 20px;
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--accent);
+  border-radius: 0 var(--radius) var(--radius) 0;
+  overflow: hidden;
+}
+
+.pattern-refs-label {
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--text-muted);
+  padding: 7px 14px;
+  background: var(--surface-alt);
+  border-bottom: 1px solid var(--border);
+}
+
+.pattern-ref-row {
+  display: grid;
+  grid-template-columns: 210px 190px 1fr;
+  font-size: 0.82rem;
+  padding: 7px 14px;
+  border-bottom: 1px solid var(--border-mid);
+  line-height: 1.4;
+}
+
+.pattern-ref-row:last-child { border-bottom: none; }
+.pattern-ref-name { font-weight: 600; color: var(--text); }
+.pattern-ref-book { font-style: italic; color: var(--text-muted); }
+.pattern-ref-note { color: var(--text-muted); }
+
 /* ── Responsive ─────────────────────────────────────────────────── */
 @media (max-width: 900px) {
   .app-main { grid-template-columns: 1fr; }
@@ -1647,4 +1801,10 @@ h2 {
   .pending-vs { display: none; }
   .citizen-records-grid { grid-template-columns: 1fr 1fr; }
   .ingest-log-row { grid-template-columns: 1fr 1fr 1fr; }
+  .landing-sections { grid-template-columns: 1fr; }
+  .landing-books { flex-direction: column; gap: 8px; }
+  .landing-books-list { flex-direction: column; gap: 6px; }
+  .pattern-ref-row { grid-template-columns: 1fr; gap: 2px; }
+  .pattern-ref-book { padding-left: 8px; }
+  .pattern-ref-note { padding-left: 8px; color: var(--text-faint); }
 }

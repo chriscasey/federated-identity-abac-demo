@@ -154,6 +154,14 @@ export function PersonResolutionAbout() {
             </div>
           </div>
         </div>
+        <div className="pattern-refs">
+          <div className="pattern-refs-label">Patterns referenced — DDIA (Kleppmann)</div>
+          <div className="pattern-ref-row">
+            <span className="pattern-ref-name">Record Linkage</span>
+            <span className="pattern-ref-book">DDIA · Ch. 10</span>
+            <span className="pattern-ref-note">identifying that records across disparate systems refer to the same real-world entity, without a shared identifier</span>
+          </div>
+        </div>
       </section>
 
       <section className="about-section">

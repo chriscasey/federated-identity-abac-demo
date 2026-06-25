@@ -122,6 +122,29 @@ export function AboutPage() {
           current system. Specific business rules and field-level logic in this proof of
           concept are illustrative.
         </p>
+        <div className="pattern-refs">
+          <div className="pattern-refs-label">Patterns referenced — PoEAA (Fowler)</div>
+          <div className="pattern-ref-row">
+            <span className="pattern-ref-name">Service Layer</span>
+            <span className="pattern-ref-book">PoEAA · Domain Logic Patterns</span>
+            <span className="pattern-ref-note">FastAPI routes define the application service boundary; all business logic lives below this layer</span>
+          </div>
+          <div className="pattern-ref-row">
+            <span className="pattern-ref-name">Data Mapper</span>
+            <span className="pattern-ref-book">PoEAA · Data Source Patterns</span>
+            <span className="pattern-ref-note">normalizer.py maps divergent SAML/OIDC protocol payloads to NormalizedIdentity without coupling either side</span>
+          </div>
+          <div className="pattern-ref-row">
+            <span className="pattern-ref-name">Repository</span>
+            <span className="pattern-ref-book">PoEAA · Data Source Patterns</span>
+            <span className="pattern-ref-note">data.py provides a collection-like interface to domain objects, hiding the in-memory store from business logic</span>
+          </div>
+          <div className="pattern-ref-row">
+            <span className="pattern-ref-name">Data Transfer Object</span>
+            <span className="pattern-ref-book">PoEAA · Distribution Patterns</span>
+            <span className="pattern-ref-note">Pydantic response models carry structured data across the API boundary in a single serializable object</span>
+          </div>
+        </div>
       </section>
 
       <section className="about-section">

@@ -90,6 +90,24 @@ export function DataArchitectureAbout() {
           they need to decide whether a particular record is fresh enough for their
           use case — rather than pretending everything is real-time.
         </p>
+        <div className="pattern-refs">
+          <div className="pattern-refs-label">Patterns referenced — DDIA (Kleppmann)</div>
+          <div className="pattern-ref-row">
+            <span className="pattern-ref-name">Lambda Architecture</span>
+            <span className="pattern-ref-book">DDIA · Ch. 10</span>
+            <span className="pattern-ref-note">batch layer + speed layer converging on one normalized store, with different latency guarantees per path</span>
+          </div>
+          <div className="pattern-ref-row">
+            <span className="pattern-ref-name">Batch Processing</span>
+            <span className="pattern-ref-book">DDIA · Ch. 10</span>
+            <span className="pattern-ref-note">scheduled ETL pull from legacy source systems that cannot push or publish to a queue</span>
+          </div>
+          <div className="pattern-ref-row">
+            <span className="pattern-ref-name">Stream Processing</span>
+            <span className="pattern-ref-book">DDIA · Ch. 11</span>
+            <span className="pattern-ref-note">queue and webhook ingestion paths for near-realtime and realtime event delivery</span>
+          </div>
+        </div>
       </section>
 
       <section className="about-section">
@@ -116,6 +134,19 @@ export function DataArchitectureAbout() {
           sync step — visible here — is where eventual consistency is intentionally
           accepted in exchange for query performance.
         </p>
+        <div className="pattern-refs">
+          <div className="pattern-refs-label">Patterns referenced — DDIA (Kleppmann)</div>
+          <div className="pattern-ref-row">
+            <span className="pattern-ref-name">CQRS</span>
+            <span className="pattern-ref-book">DDIA · Ch. 11</span>
+            <span className="pattern-ref-note">write store and read projection kept deliberately separate, each optimized for its role</span>
+          </div>
+          <div className="pattern-ref-row">
+            <span className="pattern-ref-name">Derived Data</span>
+            <span className="pattern-ref-book">DDIA · Ch. 10, 12</span>
+            <span className="pattern-ref-note">read store is derived from the source of truth; can be rebuilt from scratch if it falls behind or becomes corrupted</span>
+          </div>
+        </div>
       </section>
 
       <section className="about-section">
@@ -146,6 +177,14 @@ export function DataArchitectureAbout() {
               cost of more misses. Necessary when no shared identifier exists. The score
               is useful but requires calibration against labeled ground-truth data.
             </div>
+          </div>
+        </div>
+        <div className="pattern-refs">
+          <div className="pattern-refs-label">Patterns referenced — DDIA (Kleppmann)</div>
+          <div className="pattern-ref-row">
+            <span className="pattern-ref-name">Record Linkage</span>
+            <span className="pattern-ref-book">DDIA · Ch. 10</span>
+            <span className="pattern-ref-note">probabilistic matching of records that refer to the same real-world entity across source systems with no shared identifier</span>
           </div>
         </div>
       </section>
