@@ -39,6 +39,8 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from .models import AccessDecisionRequest, AccessDecisionResponse, AnomalyAlert, AnomalyRequest
 from .data import AGENCIES, IDENTITIES, CASE_RECORD
+from .person_data import PERSON_RECORDS, MATCH_CANDIDATES
+from .source_registry import REGISTRY
 from .access_engine import evaluate_case_access
 from .anomaly import evaluate_anomaly
 
@@ -132,3 +134,66 @@ def simulate_anomaly(request: AnomalyRequest):
     except ValueError as e:
         # evaluate_anomaly raises ValueError for unknown identity IDs.
         raise HTTPException(status_code=404, detail=str(e))
+
+
+# ── Person identity resolution routes ────────────────────────────────────────
+
+
+@app.get("/api/persons")
+def list_persons():
+    """Return all canonical person records, each with their linked source records."""
+    return list(PERSON_RECORDS.values())
+
+
+@app.get("/api/persons/{person_id}")
+def get_person(person_id: str):
+    """Fetch a single canonical person record by ID."""
+    person = PERSON_RECORDS.get(person_id)
+    if not person:
+        raise HTTPException(status_code=404, detail=f"Person '{person_id}' not found")
+    return person
+
+
+@app.get("/api/matches/pending")
+def get_pending_matches():
+    """Return all match candidates currently in pending status."""
+    return [m for m in MATCH_CANDIDATES.values() if m.status == "pending"]
+
+
+@app.post("/api/matches/{match_id}/approve")
+def approve_match(match_id: str):
+    """
+    Mark a match candidate as approved, linking the source record to the
+    canonical person. The updated match is returned so the UI can update
+    its state without a separate fetch.
+    """
+    match = MATCH_CANDIDATES.get(match_id)
+    if not match:
+        raise HTTPException(status_code=404, detail=f"Match '{match_id}' not found")
+    MATCH_CANDIDATES[match_id] = match.model_copy(update={"status": "approved"})
+    return MATCH_CANDIDATES[match_id]
+
+
+@app.post("/api/matches/{match_id}/reject")
+def reject_match(match_id: str):
+    """Mark a match candidate as rejected. The source record remains unlinked."""
+    match = MATCH_CANDIDATES.get(match_id)
+    if not match:
+        raise HTTPException(status_code=404, detail=f"Match '{match_id}' not found")
+    MATCH_CANDIDATES[match_id] = match.model_copy(update={"status": "rejected"})
+    return MATCH_CANDIDATES[match_id]
+
+
+# ── Source system field registry ─────────────────────────────────────────────
+
+
+@app.get("/api/source-systems")
+def list_source_systems():
+    """
+    Return all source system configurations from the field registry.
+
+    Each entry declares which PII fields a source system can contribute to
+    person identity matching and the classification of each field
+    (unique_identifier, quasi_identifier, or descriptor).
+    """
+    return list(REGISTRY.values())

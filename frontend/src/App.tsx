@@ -12,8 +12,13 @@ import { CaseRecordView } from './components/CaseRecordView'
 import { AnomalyPanel } from './components/AnomalyPanel'
 import { AuditLogPanel } from './components/AuditLogPanel'
 import { AboutPage } from './components/AboutPage'
+import { PersonResolutionTab } from './components/PersonResolutionTab'
+import { PersonResolutionAbout } from './components/PersonResolutionAbout'
+import { SourceSystemsConfig } from './components/SourceSystemsConfig'
 
-type Tab = 'demo' | 'about'
+type Section = 'abac' | 'persons'
+type AbacSubTab = 'demo' | 'about'
+type PersonsSubTab = 'records' | 'source-systems' | 'about'
 
 const CASE_ID = 'SF-2024-CR-00842'
 
@@ -24,7 +29,9 @@ export function App() {
   const [accessResult, setAccessResult] = useState<AccessDecisionResponse | null>(null)
   const [auditLog, setAuditLog] = useState<AuditLogEntry[]>([])
   const [showRawPayload, setShowRawPayload] = useState(false)
-  const [activeTab, setActiveTab] = useState<Tab>('demo')
+  const [activeSection, setActiveSection] = useState<Section>('abac')
+  const [abacSubTab, setAbacSubTab] = useState<AbacSubTab>('demo')
+  const [personsSubTab, setPersonsSubTab] = useState<PersonsSubTab>('records')
   const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
@@ -93,58 +100,105 @@ export function App() {
           <h1>Federated Identity &amp; ABAC Demo</h1>
           <nav className="tab-nav">
             <button
-              className={`tab-btn ${activeTab === 'demo' ? 'tab-active' : ''}`}
-              onClick={() => setActiveTab('demo')}
+              className={`tab-btn ${activeSection === 'abac' ? 'tab-active' : ''}`}
+              onClick={() => setActiveSection('abac')}
             >
-              Demo
+              Federated Identity &amp; ABAC
             </button>
             <button
-              className={`tab-btn ${activeTab === 'about' ? 'tab-active' : ''}`}
-              onClick={() => setActiveTab('about')}
+              className={`tab-btn ${activeSection === 'persons' ? 'tab-active' : ''}`}
+              onClick={() => setActiveSection('persons')}
             >
-              How it works
+              Person Records
             </button>
           </nav>
         </div>
       </header>
 
-      {activeTab === 'demo' ? (
-        <>
-          <main className="app-main">
-            <section className="left-col">
-              <IdentitySwitcher
-                identities={identities}
-                selected={selectedIdentity}
-                onSelect={selectIdentity}
-                showRawPayload={showRawPayload}
-                onToggleRaw={() => setShowRawPayload((v) => !v)}
-              />
+      <div className="sub-tab-bar">
+        {activeSection === 'abac' ? (
+          <>
+            <button
+              className={`sub-tab-btn ${abacSubTab === 'demo' ? 'sub-tab-active' : ''}`}
+              onClick={() => setAbacSubTab('demo')}
+            >
+              Demo
+            </button>
+            <button
+              className={`sub-tab-btn ${abacSubTab === 'about' ? 'sub-tab-active' : ''}`}
+              onClick={() => setAbacSubTab('about')}
+            >
+              How it works
+            </button>
+          </>
+        ) : (
+          <>
+            <button
+              className={`sub-tab-btn ${personsSubTab === 'records' ? 'sub-tab-active' : ''}`}
+              onClick={() => setPersonsSubTab('records')}
+            >
+              Records
+            </button>
+            <button
+              className={`sub-tab-btn ${personsSubTab === 'source-systems' ? 'sub-tab-active' : ''}`}
+              onClick={() => setPersonsSubTab('source-systems')}
+            >
+              Source Systems
+            </button>
+            <button
+              className={`sub-tab-btn ${personsSubTab === 'about' ? 'sub-tab-active' : ''}`}
+              onClick={() => setPersonsSubTab('about')}
+            >
+              How it works
+            </button>
+          </>
+        )}
+      </div>
 
-              <AnomalyPanel
-                identity={selectedIdentity}
-                onAlert={handleAnomalyAlert}
-              />
-            </section>
-
-            <section className="right-col">
-              {caseRecord && (
-                <CaseRecordView
-                  caseRecord={caseRecord}
-                  accessResult={accessResult}
+      {activeSection === 'abac' ? (
+        abacSubTab === 'demo' ? (
+          <>
+            <main className="app-main">
+              <section className="left-col">
+                <IdentitySwitcher
+                  identities={identities}
+                  selected={selectedIdentity}
+                  onSelect={selectIdentity}
+                  showRawPayload={showRawPayload}
+                  onToggleRaw={() => setShowRawPayload((v) => !v)}
                 />
-              )}
+                <AnomalyPanel
+                  identity={selectedIdentity}
+                  onAlert={handleAnomalyAlert}
+                />
+              </section>
+              <section className="right-col">
+                {caseRecord && (
+                  <CaseRecordView
+                    caseRecord={caseRecord}
+                    accessResult={accessResult}
+                  />
+                )}
+              </section>
+            </main>
+            <section className="audit-section">
+              <AuditLogPanel
+                entries={auditLog}
+                onClear={() => setAuditLog([])}
+              />
             </section>
-          </main>
-
-          <section className="audit-section">
-            <AuditLogPanel
-              entries={auditLog}
-              onClear={() => setAuditLog([])}
-            />
-          </section>
-        </>
+          </>
+        ) : (
+          <AboutPage />
+        )
       ) : (
-        <AboutPage />
+        personsSubTab === 'records' ? (
+          <PersonResolutionTab />
+        ) : personsSubTab === 'source-systems' ? (
+          <SourceSystemsConfig />
+        ) : (
+          <PersonResolutionAbout />
+        )
       )}
     </div>
   )

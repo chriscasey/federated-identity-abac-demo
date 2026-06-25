@@ -60,6 +60,84 @@ export interface AnomalyAlert {
   off_hours: boolean
 }
 
+// ── Person identity resolution types ─────────────────────────────────────────
+
+export interface PhysicalDescription {
+  height: string | null
+  weight: string | null
+  hair: string | null
+  eyes: string | null
+  race: string | null
+  sex: string | null
+}
+
+export interface ExtractedFields {
+  names: string[]
+  date_of_birth: string | null
+  physical: PhysicalDescription | null
+  identifiers: Record<string, string>
+  source_ids: Record<string, string>
+  case_references: string[]
+}
+
+export interface SourceRecord {
+  id: string
+  agency_id: string
+  agency_name: string
+  raw_text: string
+  extracted: ExtractedFields
+  ingested_at: string
+  person_id: string | null
+}
+
+// ── Source system field registry ──────────────────────────────────────────────
+
+export type FieldClassification = 'unique_identifier' | 'quasi_identifier' | 'descriptor'
+
+export interface RegistryField {
+  field_name: string
+  label: string
+  classification: FieldClassification
+  description: string
+}
+
+export interface SourceSystemConfig {
+  system_id: string
+  display_name: string
+  description: string
+  fields: RegistryField[]
+}
+
+// ── Match candidates ──────────────────────────────────────────────────────────
+
+export interface MatchedField {
+  field_name: string
+  label: string
+  classification: FieldClassification
+  match_type: string   // "exact" | "fuzzy" | "partial" | "verified"
+}
+
+export interface MatchCandidate {
+  id: string
+  source_record: SourceRecord
+  person_id: string
+  person_name: string
+  decision: string              // "auto_link" | "pending" | "no_match"
+  decisive_field: string | null
+  matched_fields: MatchedField[]
+  status: string                // "auto_linked" | "pending" | "approved" | "rejected"
+}
+
+export interface PersonRecord {
+  id: string
+  canonical_name: string
+  date_of_birth: string | null
+  aliases: string[]
+  physical: PhysicalDescription | null
+  identifiers: Record<string, string>
+  source_records: SourceRecord[]
+}
+
 export interface AuditLogEntry {
   timestamp: string
   identity_id: string

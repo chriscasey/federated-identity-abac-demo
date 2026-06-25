@@ -3,6 +3,9 @@ import type {
   CaseRecord,
   AccessDecisionResponse,
   AnomalyAlert,
+  PersonRecord,
+  MatchCandidate,
+  SourceSystemConfig,
 } from './types'
 
 const BASE = '/api'
@@ -40,4 +43,16 @@ export const api = {
       off_hours: offHours,
       access_count: accessCount,
     }),
+
+  listPersons: () => get<PersonRecord[]>('/persons'),
+
+  getPendingMatches: () => get<MatchCandidate[]>('/matches/pending'),
+
+  approveMatch: (matchId: string) =>
+    post<MatchCandidate>(`/matches/${matchId}/approve`, {}),
+
+  rejectMatch: (matchId: string) =>
+    post<MatchCandidate>(`/matches/${matchId}/reject`, {}),
+
+  listSourceSystems: () => get<SourceSystemConfig[]>('/source-systems'),
 }

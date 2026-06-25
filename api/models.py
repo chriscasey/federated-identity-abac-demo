@@ -189,3 +189,132 @@ class AccessDecisionRequest(BaseModel):
     """Request body for POST /api/access-decision."""
     identity_id: str
     case_id: str
+
+
+# ── Person identity resolution models ───────────────────────────────────────
+
+
+class PhysicalDescription(BaseModel):
+    """Physical attributes extracted from a source record."""
+    height: Optional[str] = None
+    weight: Optional[str] = None
+    hair: Optional[str] = None
+    eyes: Optional[str] = None
+    race: Optional[str] = None
+    sex: Optional[str] = None
+
+
+class ExtractedFields(BaseModel):
+    """Structured fields parsed from unstructured source text at ingest time."""
+    names: list[str]
+    date_of_birth: Optional[str] = None  # normalized to YYYY-MM-DD
+    physical: Optional[PhysicalDescription] = None
+    identifiers: dict[str, str] = {}     # cross-system unique identifiers (ssn, state_id, etc.)
+    source_ids: dict[str, str] = {}      # system-local IDs (booking number, case number, etc.)
+    case_references: list[str] = []
+
+
+class SourceRecord(BaseModel):
+    """
+    A raw record received from an agency legacy system, with extracted
+    structured fields attached. The raw_text is preserved verbatim so
+    a reviewer can always trace the extracted values back to their source.
+    """
+    id: str
+    agency_id: str
+    agency_name: str
+    raw_text: str
+    extracted: ExtractedFields
+    ingested_at: str          # ISO datetime string
+    person_id: Optional[str] = None   # None until linked to a canonical PersonRecord
+
+
+class FieldClassification(str, Enum):
+    """
+    How uniquely identifying a field is when used for person matching.
+
+    UNIQUE_IDENTIFIER  A match on this field alone is conclusive — only one
+                       person holds this value (SSN, state ID number, fingerprint
+                       ID). Auto-links without human review.
+
+    QUASI_IDENTIFIER   Not unique alone, but a small combination creates high
+                       confidence. Date of birth, home address. Many people share
+                       any one value; far fewer share two or more together.
+
+    DESCRIPTOR         Low discriminating power on its own. Name, physical
+                       description. Useful to corroborate but never sufficient
+                       alone or in small combination.
+    """
+    UNIQUE_IDENTIFIER = "unique_identifier"
+    QUASI_IDENTIFIER = "quasi_identifier"
+    DESCRIPTOR = "descriptor"
+
+
+class RegistryField(BaseModel):
+    """One field a source system can contribute to person matching."""
+    field_name: str              # canonical key (e.g. "ssn", "date_of_birth")
+    label: str                   # human-readable label
+    classification: FieldClassification
+    description: str             # why this field has this classification
+
+
+class SourceSystemConfig(BaseModel):
+    """
+    Declares the PII fields a source system can provide for identity matching.
+    This is a static configuration — set once per system, updated only when
+    a system's data collection practices change.
+    """
+    system_id: str
+    display_name: str
+    description: str
+    fields: list[RegistryField]
+
+
+class MatchedField(BaseModel):
+    """One field that contributed to a match decision, with how it matched."""
+    field_name: str
+    label: str
+    classification: FieldClassification
+    match_type: str   # "exact" | "fuzzy" | "partial" (name only) | "verified" (unique IDs)
+
+
+class MatchCandidate(BaseModel):
+    """
+    A potential link between an incoming source record and an existing
+    canonical person record.
+
+    decision is set by the matching engine:
+      auto_link  A unique identifier matched — conclusive, no review needed.
+      pending    Name + quasi-identifier matched but no unique ID — routes to
+                 human review.
+      no_match   Insufficient overlap to propose a link.
+
+    status tracks the workflow state after the engine decision:
+      auto_linked  Engine auto-linked; record added to person without review.
+      pending      Awaiting human review.
+      approved     Reviewer confirmed the link.
+      rejected     Reviewer rejected the link.
+    """
+    id: str
+    source_record: SourceRecord
+    person_id: str
+    person_name: str
+    decision: str                       # "auto_link" | "pending" | "no_match"
+    decisive_field: Optional[str] = None  # unique identifier field that triggered auto_link
+    matched_fields: list[MatchedField]
+    status: str                         # "auto_linked" | "pending" | "approved" | "rejected"
+
+
+class PersonRecord(BaseModel):
+    """
+    Canonical hub-level record for a citizen, built by linking and
+    reconciling records from disparate agency systems. Mirrors the MDM
+    (Master Data Management) person master pattern from the JUSTIS roadmap.
+    """
+    id: str
+    canonical_name: str
+    date_of_birth: Optional[str] = None
+    aliases: list[str] = []
+    physical: Optional[PhysicalDescription] = None
+    identifiers: dict[str, str] = {}   # confirmed cross-system unique identifiers
+    source_records: list[SourceRecord] = []
