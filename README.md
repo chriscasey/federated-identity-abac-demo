@@ -9,7 +9,7 @@ A proof-of-concept demonstrating multi-agency identity federation and attribute-
 1. **Multi-protocol identity federation** — SAML and OIDC payloads normalized into one internal identity model
 2. **Attribute-based access control** — field-level filtering on a shared case record based on identity attributes and data classification tags
 3. **Explainable access decisions** — every field shows *why* it was shown, hidden, or redacted for the current identity
-4. **Rule-based anomaly detection** — simple, interpretable thresholds (not ML), with per-agency alert routing to a mock security contact
+4. **Rule-based anomaly detection** — explicit, auditable thresholds with per-agency alert routing to a mock security contact
 5. **Audit logging** — every access decision is logged with enough context to support a real investigation
 
 ## Running locally

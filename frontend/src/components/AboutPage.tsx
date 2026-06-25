@@ -9,28 +9,29 @@ export function AboutPage() {
             <div className="about-card-num">01</div>
             <strong>Multi-protocol identity federation</strong>
             <p>
-              Two identity protocols (SAML and OIDC) are normalized into a single internal
-              identity model before any access decision is made. The demo shows the raw
-              protocol payload side-by-side with the normalized result — toggle "Show raw
-              payload" on any identity to see this.
+              Two identity protocols — Security Assertion Markup Language (SAML) and
+              OpenID Connect (OIDC) — are normalized into a single internal identity
+              model before any access decision is made. The demo shows the raw protocol
+              payload side-by-side with the normalized result — toggle "Show raw payload"
+              on any identity to see this.
             </p>
           </div>
           <div className="about-card">
             <div className="about-card-num">02</div>
-            <strong>Attribute-based access control (ABAC)</strong>
+            <strong>Attribute-Based Access Control (ABAC)</strong>
             <p>
-              Access is not determined by role alone. Each field on the case record carries a
-              classification tag, and each access decision evaluates the combination of the
-              identity's agency, role, and clearance level against that tag. The same field
-              can produce three different outcomes for three different identities.
+              Access is not determined by role alone. Each field on the case record carries
+              a classification tag, and each access decision evaluates the combination of
+              the identity's agency, role, and clearance level against that tag. The same
+              field can produce three different outcomes for three different identities.
             </p>
           </div>
           <div className="about-card">
             <div className="about-card-num">03</div>
             <strong>Explainable access decisions</strong>
             <p>
-              Every field shows <em>why</em> it was shown, hidden, or redacted — not just the
-              result. This includes both the runtime access reason (based on the current
+              Every field shows <em>why</em> it was shown, hidden, or redacted — not just
+              the result. This includes both the runtime access reason (based on the current
               identity) and the classification rationale (the legal or policy logic behind
               the tag). Click "why?" on any field in the demo.
             </p>
@@ -39,10 +40,11 @@ export function AboutPage() {
             <div className="about-card-num">04</div>
             <strong>Rule-based anomaly detection</strong>
             <p>
-              A deliberately simple, interpretable rule set: flag if access count exceeds a
-              threshold, or if access occurs off-hours. No ML, by design — explainability
-              matters more than sophistication in a justice-data context. Anomalies route an
-              alert to the flagged identity's agency-level security contact (LASO).
+              Explicit, auditable rules flag suspicious access patterns: bulk record access
+              above a threshold, or access outside business hours. When a rule fires, an
+              alert is routed to the Local Agency Security Officer (LASO) for that identity's
+              agency — the designated security contact under Criminal Justice Information
+              Services (CJIS) policy.
             </p>
           </div>
           <div className="about-card">
@@ -63,9 +65,9 @@ export function AboutPage() {
           <div className="arch-box arch-source">
             <div className="arch-label">Agency Identity Sources</div>
             <div className="arch-items">
-              <span className="arch-tag">SFPD · SAML assertion</span>
-              <span className="arch-tag">DA's Office · OIDC claims</span>
-              <span className="arch-tag">Public Defender · OIDC claims</span>
+              <span className="arch-tag">San Francisco Police Department · SAML</span>
+              <span className="arch-tag">District Attorney's Office · OIDC</span>
+              <span className="arch-tag">Public Defender's Office · OIDC</span>
             </div>
           </div>
           <div className="arch-arrow">→</div>
@@ -74,7 +76,7 @@ export function AboutPage() {
             <div className="arch-items">
               <span className="arch-detail">JUSTIS Hub-style central integration</span>
               <span className="arch-detail">Normalizes divergent protocol payloads</span>
-              <span className="arch-detail">into a person master record (MDM)</span>
+              <span className="arch-detail">into a Master Data Management (MDM) person record</span>
             </div>
           </div>
           <div className="arch-arrow">→</div>
@@ -83,14 +85,14 @@ export function AboutPage() {
             <div className="arch-items">
               <span className="arch-detail">Person Based Integrated View (PBIV)</span>
               <span className="arch-detail">Field access gated by agency level</span>
-              <span className="arch-detail">and inter-agency MOU rules</span>
+              <span className="arch-detail">and inter-agency Memoranda of Understanding (MOUs)</span>
             </div>
           </div>
           <div className="arch-arrow">→</div>
           <div className="arch-box arch-output">
             <div className="arch-label">Filtered Case View</div>
             <div className="arch-items">
-              <span className="arch-detail">CDR-style shared record</span>
+              <span className="arch-detail">Common Data Repository (CDR)-style shared record</span>
               <span className="arch-detail">Visible / Redacted / Hidden</span>
               <span className="arch-detail">with inline explanations</span>
             </div>
@@ -101,7 +103,7 @@ export function AboutPage() {
             <div className="arch-label">Anomaly Detector</div>
             <div className="arch-items">
               <span className="arch-detail">Runs alongside access decisions</span>
-              <span className="arch-detail">Routes alerts to agency LASO</span>
+              <span className="arch-detail">Routes alerts to agency Local Agency Security Officer (LASO)</span>
             </div>
           </div>
           <div className="arch-side-box">
@@ -117,8 +119,8 @@ export function AboutPage() {
           <strong>CCSF JUSTIS 5-Year Roadmap and Implementation Plan</strong>{' '}
           (Gartner, 2019, publicly available via sf.gov). That document is approximately
           six years old and describes an intended future state — it may not reflect the
-          current system. Specific business rules and field-level logic in this PoC are
-          illustrative.
+          current system. Specific business rules and field-level logic in this proof of
+          concept are illustrative.
         </p>
       </section>
 
@@ -133,28 +135,29 @@ export function AboutPage() {
           </div>
           <div className="id-row">
             <span>Detective J. Rivera</span>
-            <span>SFPD</span>
+            <span>San Francisco Police Department (SFPD)</span>
             <span className="proto-tag proto-saml">SAML</span>
             <span><code>subjectId</code> → <code>internal_id</code></span>
           </div>
           <div className="id-row">
             <span>ADA M. Chen</span>
-            <span>DA's Office</span>
+            <span>District Attorney's Office</span>
             <span className="proto-tag proto-oidc">OIDC</span>
             <span><code>sub</code> → <code>internal_id</code></span>
           </div>
           <div className="id-row">
             <span>Deputy PD S. Alvarez</span>
-            <span>Public Defender</span>
+            <span>Public Defender's Office</span>
             <span className="proto-tag proto-oidc">OIDC</span>
             <span><code>sub</code> → <code>internal_id</code></span>
           </div>
         </div>
         <p className="about-note">
-          SFPD uses SAML (common in legacy enterprise environments); both DA and Public
-          Defender use OIDC. Different field names for the same concepts (e.g.{' '}
-          <code>subjectId</code> vs <code>sub</code>) are intentional — the normalization
-          layer's job is to hide this.
+          SFPD uses SAML (common in legacy enterprise environments); both the District
+          Attorney's Office and Public Defender's Office use OIDC. The different field
+          names for the same concepts (e.g. <code>subjectId</code> vs <code>sub</code>)
+          are intentional — the normalization layer's job is to hide this divergence from
+          all downstream code.
         </p>
       </section>
 
@@ -177,15 +180,16 @@ export function AboutPage() {
           <div className="class-row">
             <span className="class-tag class-prosecution">prosecution_only</span>
             <span>
-              DA's Office only. Hard deny for Public Defender and SFPD. Protects attorney
-              work product (Hickman v. Taylor) and prevents Brady violations.
+              District Attorney's Office only. Hard deny for the Public Defender and SFPD.
+              Protects attorney work product (Hickman v. Taylor) and prevents Brady violations.
             </span>
           </div>
           <div className="class-row">
             <span className="class-tag class-defense">defense_only</span>
             <span>
-              Public Defender only. Hard deny for DA and SFPD. Protects attorney-client
-              privilege and the defendant's Sixth Amendment right to effective counsel.
+              Public Defender's Office only. Hard deny for the District Attorney and SFPD.
+              Protects attorney-client privilege and the defendant's Sixth Amendment right
+              to effective counsel.
             </span>
           </div>
           <div className="class-row">
@@ -202,34 +206,36 @@ export function AboutPage() {
       </section>
 
       <section className="about-section">
-        <h2>Anomaly detection logic</h2>
+        <h2>Anomaly detection</h2>
         <p className="about-body">
-          The anomaly detector applies two simple, independently-triggering rules:
+          The anomaly detector uses explicit, independently-triggering rules. Each rule
+          produces a plain-language reason string that becomes part of the alert — so a
+          reviewer can always trace exactly what triggered the flag and why.
         </p>
         <div className="rule-list">
           <div className="rule-row">
             <span className="rule-name">Bulk access</span>
             <span>
               If the simulated access count exceeds 5 records, an anomaly is flagged. The
-              threshold is intentionally low for demo purposes — in a real system it would be
-              calibrated against behavioral baselines per role and time period.
+              threshold is set low for demo purposes — in a real deployment it would be
+              calibrated per role against historical session baselines.
             </span>
           </div>
           <div className="rule-row">
             <span className="rule-name">Off-hours</span>
             <span>
-              If the "off-hours" flag is set (simulating a 02:14 AM access), an anomaly is
-              flagged regardless of volume. Off-hours access to sensitive case data is a
-              well-known indicator of credential compromise or insider threat.
+              If access is flagged as occurring outside business hours (simulating a 02:14 AM
+              session), an anomaly is triggered regardless of volume. Off-hours access to
+              sensitive case data is a recognized indicator of credential compromise or
+              insider threat.
             </span>
           </div>
         </div>
         <p className="about-body" style={{ marginTop: '12px' }}>
           On trigger, the alert payload includes the identity, agency, reason, and the
-          agency-level security contact (LASO) the alert would be routed to. No ML is used —
-          a deliberate choice. Rule-based systems are auditable and explainable; a
-          justice-data context demands that an officer can understand exactly why an alert
-          was generated.
+          LASO contact the alert would be routed to. In a production system this would
+          publish to an alerting queue; here it returns directly to the UI so the routing
+          logic is visible during the demo.
         </p>
       </section>
 
@@ -238,21 +244,19 @@ export function AboutPage() {
         <ul className="about-list">
           <li>
             <strong>Real SAML/OIDC handshakes.</strong> Identity payloads are mocked and
-            hardcoded. A real implementation would integrate with actual IdPs and validate tokens.
+            hardcoded. A real implementation would integrate with actual Identity Providers
+            (IdPs) and validate tokens cryptographically.
           </li>
           <li>
-            <strong>Full CJIS technical controls.</strong> This demo addresses the access
-            control and identity modeling layer, not encryption implementation, FIPS-validated
-            modules, or network security controls.
+            <strong>Full CJIS technical controls.</strong> Criminal Justice Information
+            Services (CJIS) compliance covers encryption, Federal Information Processing
+            Standards (FIPS)-validated modules, network controls, and more. This demo
+            addresses the access control and identity modeling layer only.
           </li>
           <li>
-            <strong>Machine learning anomaly detection.</strong> Intentionally avoided.
-            Explainability matters more than sophistication here.
-          </li>
-          <li>
-            <strong>Persistent audit log.</strong> The audit log is session-scoped React state.
-            A real system would require an immutable, append-only, centrally stored log with
-            tamper detection and retention policies.
+            <strong>Persistent audit log.</strong> The audit log is session-scoped browser
+            state. A real system would require an immutable, append-only, centrally stored
+            log with tamper detection and retention policies.
           </li>
           <li>
             <strong>Multiple cases or records.</strong> One illustrative case is enough to

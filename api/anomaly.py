@@ -3,11 +3,12 @@ Rule-based anomaly detection.
 
 Design intent
 -------------
-This detector is intentionally simple and non-ML. In a justice-data context,
-explainability matters more than sophistication: an analyst or LASO must be
-able to understand exactly why an alert was generated and justify that
-explanation in a legal or compliance context. A neural net score of 0.87
-cannot do that; "7 records accessed in one session (threshold: 5)" can.
+Each rule in this detector produces a plain-language reason string that
+becomes part of the alert payload. In a justice-data context, an analyst or
+Local Agency Security Officer (LASO) must be able to understand exactly why
+an alert was generated and justify that explanation in a legal or compliance
+context — "7 records accessed in one session (threshold: 5)" satisfies that
+requirement directly.
 
 Two rules are implemented, each triggering independently:
 
