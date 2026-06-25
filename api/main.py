@@ -43,6 +43,9 @@ from .person_data import PERSON_RECORDS, MATCH_CANDIDATES
 from .source_registry import REGISTRY
 from .access_engine import evaluate_case_access
 from .anomaly import evaluate_anomaly
+from . import ingestion as ing
+from . import read_store as rs
+from . import entity_resolution as er
 
 app = FastAPI(title="Federated Identity ABAC Demo API")
 
@@ -197,3 +200,107 @@ def list_source_systems():
     (unique_identifier, quasi_identifier, or descriptor).
     """
     return list(REGISTRY.values())
+
+
+# ── Ingestion pattern routes ──────────────────────────────────────────────────
+
+
+@app.get("/api/ingest/log")
+def get_ingestion_log():
+    """Return all ingested records, most recent last."""
+    return list(reversed(ing.INGESTION_LOG))
+
+
+@app.get("/api/ingest/queue")
+def get_ingestion_queue():
+    """Return all events currently waiting in the async queue."""
+    return ing.INGESTION_QUEUE
+
+
+@app.post("/api/ingest/push")
+def push_event(request: ing.PushEventRequest):
+    """
+    Simulate receiving a real-time webhook POST from a push-capable agency.
+    Ingests immediately with freshness='realtime'.
+    """
+    return ing.handle_push_event(request)
+
+
+@app.post("/api/ingest/enqueue")
+def enqueue(request: ing.PushEventRequest):
+    """Place an event on the async queue (SQS SendMessage analog)."""
+    return ing.enqueue_event(request)
+
+
+@app.post("/api/ingest/queue/process")
+def process_queue():
+    """
+    Consume the oldest queue item and ingest it (SQS ReceiveMessage + Delete).
+    Returns the ingested record, or 204 if the queue is empty.
+    """
+    record = ing.process_queue_item()
+    if record is None:
+        from fastapi import Response
+        return Response(status_code=204)
+    return record
+
+
+@app.post("/api/ingest/batch")
+def batch_pull(request: ing.BatchPullRequest):
+    """
+    Simulate a nightly batch pull from a legacy source system.
+    Returns all records pulled in this batch run, each tagged batch-24h.
+    """
+    records = ing.run_batch_pull(request)
+    return {"records_pulled": len(records), "records": records}
+
+
+# ── CQRS read-store routes ────────────────────────────────────────────────────
+
+
+@app.get("/api/read-store/status")
+def read_store_status():
+    """Return the current sync status of the read projection."""
+    return rs.get_status()
+
+
+@app.get("/api/read-store/records")
+def read_store_records():
+    """Return all records in the read projection (OpenSearch-style document index)."""
+    return rs.READ_STORE
+
+
+@app.post("/api/read-store/sync")
+def sync_read_store():
+    """
+    Rebuild the read projection from the source of truth (data.py).
+    Makes the CQRS sync step explicit and visible.
+    """
+    return rs.sync_from_source()
+
+
+# ── Entity resolution routes ──────────────────────────────────────────────────
+
+
+@app.get("/api/entity-resolution/state")
+def entity_resolution_state():
+    """Return full entity resolution state: citizen records, golden records, review queue."""
+    return er.get_state()
+
+
+@app.post("/api/entity-resolution/review/{record_id}/approve")
+def approve_entity_match(record_id: str):
+    """Link a review-queue record to its golden record."""
+    state = er.approve_review(record_id)
+    if state is None:
+        raise HTTPException(status_code=404, detail=f"Review item '{record_id}' not found")
+    return state
+
+
+@app.post("/api/entity-resolution/review/{record_id}/reject")
+def reject_entity_match(record_id: str):
+    """Reject a review-queue match; record remains unlinked."""
+    state = er.reject_review(record_id)
+    if state is None:
+        raise HTTPException(status_code=404, detail=f"Review item '{record_id}' not found")
+    return state

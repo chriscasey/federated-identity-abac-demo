@@ -138,6 +138,97 @@ export interface PersonRecord {
   source_records: SourceRecord[]
 }
 
+// ── Ingestion patterns ────────────────────────────────────────────────────────
+
+export type FreshnessLevel = 'realtime' | 'near-realtime' | 'batch-24h'
+
+export interface IngestedRecord {
+  id: string
+  source_system: string
+  agency_name: string
+  subject: string
+  event_type: string
+  freshness: FreshnessLevel
+  ingestion_method: string
+  ingested_at: string
+}
+
+export interface QueuedEvent {
+  id: string
+  source_system: string
+  agency_name: string
+  subject: string
+  event_type: string
+  queued_at: string
+}
+
+// ── CQRS read store ───────────────────────────────────────────────────────────
+
+export interface ReadProjectionRecord {
+  identity_id: string
+  display_name: string
+  role: string
+  clearance_level: string
+  agency_id: string
+  agency_name: string
+  federation_protocol: string
+  searchable_text: string
+}
+
+export interface SyncStatus {
+  syncing: boolean
+  last_synced_at: string | null
+  record_count: number
+  source_record_count: number
+}
+
+// ── Entity resolution ─────────────────────────────────────────────────────────
+
+export interface CitizenRecord {
+  id: string
+  source_system: string
+  agency_name: string
+  names: string[]
+  date_of_birth: string | null
+  address: string | null
+  ssn: string | null
+}
+
+export interface EntityMatch {
+  record_id: string
+  golden_record_id: string
+  name_score: number
+  dob_score: number
+  address_score: number | null
+  composite_score: number
+  decision: string  // "auto_link" | "review" | "no_match"
+  score_breakdown: string
+}
+
+export interface GoldenRecord {
+  id: string
+  canonical_name: string
+  date_of_birth: string | null
+  canonical_address: string | null
+  linked_record_ids: string[]
+  source_systems: string[]
+}
+
+export interface ReviewQueueItem {
+  match: EntityMatch
+  citizen_record: CitizenRecord
+  golden_record: GoldenRecord
+}
+
+export interface EntityResolutionState {
+  citizen_records: CitizenRecord[]
+  golden_records: GoldenRecord[]
+  match_results: Record<string, EntityMatch>
+  review_queue: ReviewQueueItem[]
+  auto_link_threshold: number
+  review_threshold: number
+}
+
 export interface AuditLogEntry {
   timestamp: string
   identity_id: string

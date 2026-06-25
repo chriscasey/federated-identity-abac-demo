@@ -15,10 +15,15 @@ import { AboutPage } from './components/AboutPage'
 import { PersonResolutionTab } from './components/PersonResolutionTab'
 import { PersonResolutionAbout } from './components/PersonResolutionAbout'
 import { SourceSystemsConfig } from './components/SourceSystemsConfig'
+import { IngestionPanel } from './components/IngestionPanel'
+import { CQRSPanel } from './components/CQRSPanel'
+import { EntityResolutionPanel } from './components/EntityResolutionPanel'
+import { DataArchitectureAbout } from './components/DataArchitectureAbout'
 
-type Section = 'abac' | 'persons'
+type Section = 'abac' | 'persons' | 'data-arch'
 type AbacSubTab = 'demo' | 'about'
 type PersonsSubTab = 'records' | 'source-systems' | 'about'
+type DataArchSubTab = 'ingestion' | 'storage' | 'entity-resolution' | 'about'
 
 const CASE_ID = 'SF-2024-CR-00842'
 
@@ -32,6 +37,7 @@ export function App() {
   const [activeSection, setActiveSection] = useState<Section>('abac')
   const [abacSubTab, setAbacSubTab] = useState<AbacSubTab>('demo')
   const [personsSubTab, setPersonsSubTab] = useState<PersonsSubTab>('records')
+  const [dataArchSubTab, setDataArchSubTab] = useState<DataArchSubTab>('ingestion')
   const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
@@ -111,12 +117,45 @@ export function App() {
             >
               Person Records
             </button>
+            <button
+              className={`tab-btn ${activeSection === 'data-arch' ? 'tab-active' : ''}`}
+              onClick={() => setActiveSection('data-arch')}
+            >
+              Data Architecture
+            </button>
           </nav>
         </div>
       </header>
 
       <div className="sub-tab-bar">
-        {activeSection === 'abac' ? (
+        {activeSection === 'data-arch' ? (
+          <>
+            <button
+              className={`sub-tab-btn ${dataArchSubTab === 'ingestion' ? 'sub-tab-active' : ''}`}
+              onClick={() => setDataArchSubTab('ingestion')}
+            >
+              Ingestion
+            </button>
+            <button
+              className={`sub-tab-btn ${dataArchSubTab === 'storage' ? 'sub-tab-active' : ''}`}
+              onClick={() => setDataArchSubTab('storage')}
+            >
+              Storage (CQRS)
+            </button>
+            <button
+              className={`sub-tab-btn ${dataArchSubTab === 'entity-resolution' ? 'sub-tab-active' : ''}`}
+              onClick={() => setDataArchSubTab('entity-resolution')}
+            >
+              Entity Resolution
+            </button>
+            <button
+              className={`sub-tab-btn ${dataArchSubTab === 'about' ? 'sub-tab-active' : ''}`}
+              onClick={() => setDataArchSubTab('about')}
+            >
+              How it works
+            </button>
+          </>
+        ) : activeSection === 'abac' ? (
           <>
             <button
               className={`sub-tab-btn ${abacSubTab === 'demo' ? 'sub-tab-active' : ''}`}
@@ -191,13 +230,23 @@ export function App() {
         ) : (
           <AboutPage />
         )
-      ) : (
+      ) : activeSection === 'persons' ? (
         personsSubTab === 'records' ? (
           <PersonResolutionTab />
         ) : personsSubTab === 'source-systems' ? (
           <SourceSystemsConfig />
         ) : (
           <PersonResolutionAbout />
+        )
+      ) : (
+        dataArchSubTab === 'ingestion' ? (
+          <IngestionPanel />
+        ) : dataArchSubTab === 'storage' ? (
+          <CQRSPanel />
+        ) : dataArchSubTab === 'entity-resolution' ? (
+          <EntityResolutionPanel />
+        ) : (
+          <DataArchitectureAbout />
         )
       )}
     </div>

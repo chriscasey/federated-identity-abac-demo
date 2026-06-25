@@ -6,11 +6,25 @@ A proof-of-concept demonstrating multi-agency identity federation and attribute-
 
 ## What it demonstrates
 
+### Federated Identity & ABAC
+
 1. **Multi-protocol identity federation** — SAML and OIDC payloads normalized into one internal identity model
 2. **Attribute-based access control** — field-level filtering on a shared case record based on identity attributes and data classification tags
 3. **Explainable access decisions** — every field shows *why* it was shown, hidden, or redacted for the current identity
 4. **Rule-based anomaly detection** — explicit, auditable thresholds with per-agency alert routing to a mock security contact
 5. **Audit logging** — every access decision is logged with enough context to support a real investigation
+
+### Person Records & Entity Resolution
+
+6. **Field-classification matching** — fields classified as unique identifier / quasi-identifier / descriptor; matching logic is deterministic (SSN match → auto-link; name + DOB with no unique ID → pending review)
+7. **Source system registry** — per-agency field inventory with classification, visible in the UI
+8. **Golden record concept** — SFPD booking and Probation intake auto-link via SSN; DA case notes route to the human review queue
+
+### Data Architecture
+
+9. **Ingestion patterns** — push/webhook (realtime), SQS-style queue (near-realtime), and batch pull (24 h) feeding the same normalized store; every record tagged with its freshness tier
+10. **CQRS storage** — writes to a Postgres-style source of truth; reads from an OpenSearch-style derived projection; explicit sync step demonstrates the eventual consistency window
+11. **Probabilistic entity resolution** — weighted-attribute scoring (name, DOB, address) across 4 citizen records with no shared identifier; auto-link threshold 0.75, review threshold 0.40; conservative thresholds justified by asymmetric false-positive cost in a justice context
 
 ## Running locally
 
@@ -39,23 +53,31 @@ Frontend runs at `http://localhost:5173`. The Vite dev server proxies `/api/*` t
 ## Project structure
 
 ```
-api/                  FastAPI backend
-  main.py             Routes
-  models.py           Pydantic data models
-  data.py             Mock agencies, identities, case record
-  access_engine.py    ABAC decision logic
-  normalizer.py       SAML/OIDC → NormalizedIdentity
-  anomaly.py          Rule-based anomaly detection
+api/
+  main.py               Routes (28 total)
+  models.py             Pydantic data models
+  data.py               SOURCE OF TRUTH — mock agencies, identities, case record (Postgres-style role)
+  access_engine.py      ABAC decision logic
+  normalizer.py         SAML/OIDC → NormalizedIdentity
+  anomaly.py            Rule-based anomaly detection
+  source_registry.py    Per-agency field registry (unique_identifier / quasi_identifier / descriptor)
+  person_data.py        Demo person records and match candidates
+  person_resolution.py  Field-classification matching logic
+  ingestion.py          Push/queue/batch ingestion model with freshness tagging
+  read_store.py         OpenSearch-style read projection (CQRS read side)
+  entity_resolution.py  Weighted-attribute citizen matching, golden record, review queue
 
 netlify/functions/
-  api.py              Mangum wrapper — exposes FastAPI as a Netlify Function
+  api.py                Mangum wrapper — exposes FastAPI as a Netlify Function
 
 frontend/src/
-  App.tsx             Root component and state
-  api.ts              Typed API client
-  types.ts            TypeScript types (mirror of Pydantic models)
-  components/         IdentitySwitcher, CaseRecordView, FieldRow,
-                      AnomalyPanel, AuditLogPanel
+  App.tsx               Root component; 3 top-nav sections, each with sub-tabs
+  api.ts                Typed API client
+  types.ts              TypeScript types mirroring all Pydantic models
+  components/
+    IdentitySwitcher, CaseRecordView, FieldRow, AnomalyPanel, AuditLogPanel, AboutPage
+    PersonResolutionTab, PersonResolutionAbout, SourceSystemsConfig
+    IngestionPanel, CQRSPanel, EntityResolutionPanel, DataArchitectureAbout
 ```
 
 ## Deployment
@@ -88,6 +110,20 @@ The following terms from that document are used to ground the demo's architectur
 | **Master Data Management (MDM)** | Person master data identified as the first MDM domain in the roadmap | The identity normalization layer (`normalizer.py`) implements exactly this: taking divergent agency identity payloads and producing a single canonical person record |
 | **Person Based Integrated View (PBIV)** | Cross-agency consolidated view of a person's record, with field-level access gated by agency access level and inter-agency MOUs | The access decision engine (`access_engine.py`) is a simplified illustration of the PBIV access gate |
 | **CJIS** | Criminal Justice Information Services — the FBI compliance framework governing criminal justice data handling | Referenced as the real-world compliance backdrop; this PoC addresses the access control modeling layer, not full CJIS technical controls |
+
+## Data architecture design rationale
+
+### Why three ingestion patterns?
+
+Not every agency system has the same integration capability. Requiring a single model (e.g., "all agencies must push in real time") would block integration with legacy systems. The push/queue/batch trio is a practical progression: modern systems get a webhook, asynchronous producers get a queue, and CABLE3/CMS-era systems that can only export a snapshot get a nightly batch pull. All three converge on the same normalized store; the freshness label on each record tells consumers how much to trust it for time-sensitive queries.
+
+### Why CQRS?
+
+Cross-agency queries ("find all active cases for this person across all 8 agencies") have very different performance characteristics than the writes that produce them. A relational source of truth is the right place to guarantee consistency and auditability; an OpenSearch-style index is the right place to serve fast multi-field queries. Keeping them separate avoids the failure mode of treating a search index as authoritative — if the index falls behind or becomes corrupted, you rebuild it from the source of truth. No data is lost because no data lives there exclusively.
+
+### Why a conservative entity resolution threshold?
+
+In a justice-system context, a false match (incorrectly merging two different people's records) can propagate into downstream decisions before being caught. A false negative (missing a valid link) is recoverable: a human reviewer will eventually surface it. This asymmetry — identical to the reasoning behind the "explainability over sophistication" principle in anomaly detection — argues for conservative thresholds (0.75 auto-link) and routing uncertain matches to a human review queue. The threshold is illustrative; a production deployment would require calibration against labeled ground-truth data and likely legal review.
 
 ## Design decisions I'd revisit with real requirements
 

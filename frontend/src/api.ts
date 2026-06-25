@@ -6,6 +6,11 @@ import type {
   PersonRecord,
   MatchCandidate,
   SourceSystemConfig,
+  IngestedRecord,
+  QueuedEvent,
+  ReadProjectionRecord,
+  SyncStatus,
+  EntityResolutionState,
 } from './types'
 
 const BASE = '/api'
@@ -55,4 +60,25 @@ export const api = {
     post<MatchCandidate>(`/matches/${matchId}/reject`, {}),
 
   listSourceSystems: () => get<SourceSystemConfig[]>('/source-systems'),
+
+  // Ingestion patterns
+  getIngestionLog:   () => get<IngestedRecord[]>('/ingest/log'),
+  getIngestionQueue: () => get<QueuedEvent[]>('/ingest/queue'),
+  pushEvent: (body: { source_system: string; agency_name: string; subject: string; event_type: string }) =>
+    post<IngestedRecord>('/ingest/push', body),
+  processQueueItem: () => post<IngestedRecord | null>('/ingest/queue/process', {}),
+  runBatchPull: (source_system: string) =>
+    post<{ records_pulled: number; records: IngestedRecord[] }>('/ingest/batch', { source_system }),
+
+  // CQRS read store
+  getReadStoreStatus:  () => get<SyncStatus>('/read-store/status'),
+  getReadStoreRecords: () => get<ReadProjectionRecord[]>('/read-store/records'),
+  syncReadStore:       () => post<SyncStatus>('/read-store/sync', {}),
+
+  // Entity resolution
+  getEntityResolutionState: () => get<EntityResolutionState>('/entity-resolution/state'),
+  approveEntityMatch: (recordId: string) =>
+    post<EntityResolutionState>(`/entity-resolution/review/${recordId}/approve`, {}),
+  rejectEntityMatch: (recordId: string) =>
+    post<EntityResolutionState>(`/entity-resolution/review/${recordId}/reject`, {}),
 }

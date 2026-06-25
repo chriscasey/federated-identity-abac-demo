@@ -4,6 +4,17 @@ Static mock data for the demo: agencies, identities, and the single case record.
 Everything here is invented for illustration purposes. The payload shapes,
 field values, case details, and legal citations are plausible but fictional.
 
+SOURCE OF TRUTH (Postgres-style role)
+--------------------------------------
+In the CQRS storage model this module plays the role of the Postgres source of
+truth: the canonical, ACID-compliant store where normalized records live with
+full referential integrity. Writes here are authoritative.
+
+A derived read projection (read_store.py, representing an OpenSearch-style
+document index) is rebuilt from this data on each sync. The read store serves
+search and cross-agency queries; this module remains the authoritative source.
+If the two ever disagree, this module is correct.
+
 Real-world grounding
 --------------------
 The structure of this module mirrors the Common Data Repository (CDR) pattern
