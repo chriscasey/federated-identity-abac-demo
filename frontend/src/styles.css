@@ -397,7 +397,6 @@ h2 {
 
 /* ── About page ─────────────────────────────────────────────────── */
 .about-page {
-  max-width: 860px;
   display: flex;
   flex-direction: column;
   gap: 36px;
