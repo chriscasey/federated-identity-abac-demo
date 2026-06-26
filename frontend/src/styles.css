@@ -1169,7 +1169,6 @@ h2 {
 /* ── Data Architecture ──────────────────────────────────────────── */
 .data-arch-page {
   padding: 24px 28px;
-  max-width: 1100px;
 }
 .data-arch-intro {
   margin-bottom: 24px;
