@@ -35,7 +35,7 @@ export function EntityResolutionPanel() {
     <div className="data-arch-page">
       <div className="data-arch-intro">
         <p>
-          This is the problem Keith specifically named: identity mapping for <em>citizens</em>,
+          This came up in our conversations: identity mapping for <em>citizens</em>,
           not system users. Three agencies hold records for the same person — entered at
           different times with different formats and no shared identifier. A fourth record
           has the same last name and date of birth but a different first name and address.
