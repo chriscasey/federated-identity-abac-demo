@@ -40,6 +40,7 @@ export function App() {
   const [personsSubTab, setPersonsSubTab] = useState<PersonsSubTab>('records')
   const [dataArchSubTab, setDataArchSubTab] = useState<DataArchSubTab>('ingestion')
   const [error, setError] = useState<string | null>(null)
+  const [accessEventCount, setAccessEventCount] = useState(0)
 
   useEffect(() => {
     Promise.all([api.listIdentities(), api.getCase(CASE_ID)])
@@ -53,6 +54,7 @@ export function App() {
   const selectIdentity = async (identity: NormalizedIdentity) => {
     setSelectedIdentity(identity)
     setShowRawPayload(false)
+    setAccessEventCount((n) => n + 1)
     try {
       const result = await api.accessDecision(identity.internal_id, CASE_ID)
       setAccessResult(result)
@@ -217,6 +219,7 @@ export function App() {
                 />
                 <AnomalyPanel
                   identity={selectedIdentity}
+                  accessCount={accessEventCount}
                   onAlert={handleAnomalyAlert}
                 />
               </section>
